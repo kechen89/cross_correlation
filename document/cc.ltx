@@ -35,12 +35,8 @@ E-mail: kechen@lbl.gov\\}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%ABSTRACT%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
-
- 
+The waveform least-squares misfit function is often used in full-waveform inversion. However, it may lead to local minimum if the observed data and synthetic data are cycle-skipped. This document shows the cross-correlation travel time misfit function and the corresponding adjoint source for synthetic and real seismic data. 
 \end{abstract}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%INTRODUCTION%%%%%%%%%%%%%%%%%%%%%
-\section{Introduction}
 
 
 %%%%%%%%%%%%%%%%%THEORY%%%%%%%%%%%%%%%
@@ -49,109 +45,219 @@ E-mail: kechen@lbl.gov\\}
 
 The cross-correlation of observed and synthetic signal is defined as
 \begin{equation}
-C(\tau) = \int_{t1}^{t2}u(t-\tau)u^{obs}(t)dt = \int_{t1}^{t2}u(t)u^{obs}(t+\tau)dt
-\end{equation}
-where $u(t)$ is synthetic waveform data using model parameter $m$ and elastic wave equation.
-
-The peak time shift is defined as the time shift that maximize the cross-correlation function
-\begin{equation}
-\delta \tau =\underset{\tau} { \mbox{max} } ~C(\tau) = \underset{\tau} { \mbox{max} } \int_{t1}^{t2}u(t)u^{obs}(t+\tau)dt
-\end{equation}
-
-To obtain the connection between the peak time shift $\delta \tau$ and model parameter $m$, one needs to first estimate the relation between the peak time shift $\delta \tau$ and synthetic data $u(t)$. The derivative of $C(\tau)$ with respect to $\tau$ is given by
-\begin{equation}
 \begin{aligned}
-\dfrac{\partial C(\tau)}{\partial \tau} &= \int_{t1}^{t2}u(t)\dfrac{\partial u^{obs}(t+\tau)}{\partial \tau}dt = \int_{t1}^{t2}u(t)\dfrac{\partial u^{obs}(t+\tau)}{\partial (t+\tau)}\dfrac{\partial (t+\tau)}{\partial \tau}dt\\
-&= \int_{t1}^{t2}u(t)\dot{u}^{obs}(t+ \tau) dt
+C(x_r,\tau;x_s) &= \int_{t1}^{t2}d(x_r,t-\tau;x_s)d^{obs}(x_r,t;x_s)dt \\
+&= \int_{t1}^{t2}d(x_r,t;x_s)d^{obs}(x_r,t+\tau;x_s)dt,
 \end{aligned}
 \end{equation}
-where over-dot means time derivative.
-The derivative $\partial C(\tau)/\partial \tau$ vanishes at $\tau = \delta \tau$.
+where $\tau$ is the time shift, $d(x_r,t;x_s)$ and $d^{obs}(x_r,t;x_s)$ are the synthetic and observed seismic data at for source $s$ and receiver $r$. The synthetic seismic data are dependent on the earth model parameter.
+
+\subsection{Travel time difference/peak time shift}
+The peak time shift is defined as the time shift that maximize the cross-correlation function
 \begin{equation}
-\dfrac{\partial C(\tau)}{\partial \tau} \mid_{\tau = \delta \tau} =  \int_{t1}^{t2}u(t)\dot{u}^{obs}(t+ \delta\tau) dt = 0
+\delta \tau(x_r,x_s) =\underset{\tau} { \mbox{max} } ~C(x_r,\tau;x_s) = \underset{\tau} { \mbox{max} } \int_{t1}^{t2}d(x_r,t;x_s)d^{obs}(x_r,t+\tau;x_s)dt.
+\end{equation}
+
+\subsection{Implicit function between peak time shift and synthetic waveform data}
+To obtain the connection between the peak time shift $\delta \tau(x_r,x_s)$ and model parameter $m(x)$, one needs to first estimate the relation between the peak time shift $\delta \tau(x_r,x_s)$ and synthetic data $d(x_r,t;x_s)$. The derivative of $C(x_r,\tau;x_s)$ with respect to $\tau$ is given by
+\begin{equation}
+\begin{aligned}
+\dfrac{\partial C(x_r,\tau;x_s)}{\partial \tau} &= \int_{t1}^{t2}d(x_r,t;x_s)\dfrac{\partial d^{obs}(x_r,t+\tau;x_s)}{\partial \tau}dt \\
+&= \int_{t1}^{t2}d(x_r,t;x_s)\dfrac{\partial d^{obs}(x_r,t+\tau;x_s)}{\partial (t+\tau)}\dfrac{\partial (t+\tau)}{\partial \tau}dt \\
+& = \int_{t1}^{t2}d(x_r,t;x_s)\dot{d}^{obs}(x_r,t+ \tau;x_s) dt,
+\end{aligned}
+\end{equation}
+where over-dot means time derivative. It is obvious that the derivative $\partial C(x_r,\tau;x_s)/\partial \tau$ vanishes at peak time shift $\tau = \delta \tau$.
+\begin{equation}
+\dfrac{\partial C(x_r,\tau;x_s)}{\partial \tau} \mid_{\tau = \delta \tau} =  \int_{t1}^{t2}d(x_r,t;x_s)\dot{d}^{obs}(x_r,t+ \delta\tau;x_s) dt = 0
 \label{connection}
 \end{equation}
-Equation \ref{connection} indicates that the peak time shift $\delta \tau$ is an implicit function of synthetic data $u(t)$. It can be denoted as
+Equation \ref{connection} indicates that the peak time shift $\delta \tau (x_r,x_s)$ is an implicit function of synthetic data $d(x_r,t;x_s)$. The connectivity can be denoted as
 \begin{equation}
-f(u,\delta \tau) =  \int_{t1}^{t2}u(t)\dot{u}^{obs}(t+ \delta\tau) dt = 0.
+f[d(x_r,t;x_s),\delta \tau (x_r,x_s)] =  \int_{t1}^{t2}d(x_r,t;x_s)\dot{d}^{obs}(x_r,t+ \delta\tau;x_s) dt = 0.
 \label{implicit}
 \end{equation}
 
-\subsection{Cross-correlation travel time misfit function}
+\subsection{Cross-correlation travel time misfit function for inversion}
 The cross-correlation travel time misfit function for full-waveform inversion is defined as the sum of the square of the peak time shift
 \begin{equation}
-J = \dfrac{1}{2}\underset{s}{\sum}\underset{r}{\sum}\delta \tau(x_r,x_s)^2
+J = \dfrac{1}{2}\underset{s}{\sum}\underset{r}{\sum}\delta \tau(x_r,x_s)^2,
 \end{equation}
+where $\delta \tau(x_r,x_s)$ represents the peak time shift of observed and synthetic seismograms between source $s$ and receiver $r$. 
 
-\subsection{Gradient}
+\subsection{Gradient of misfit function}
 
 One of the key component of full-waveform inversion is the gradient of the misfit function
 \begin{equation}
-g = \dfrac{\partial J}{\partial m} = \underset{s}{\sum} \underset{r}{\sum} \dfrac{\partial \delta \tau(x_r,x_s)}{\partial m}\delta \tau(x_r,x_s)
+g(x) = \dfrac{\partial J}{\partial m(x)} = \underset{s}{\sum} \underset{r}{\sum} \dfrac{\partial \delta \tau(x_r,x_s)}{\partial m(x)}\delta \tau(x_r,x_s),
 \label{gradient}
 \end{equation}
+the gradient is obtained by applying the Frechet derivative on the peak time shift. 
 
-The gradient is obtained by applying the Frechet derivative on the peak time shift. To get the Frechet derivative, we differentiate equation $f(u,\delta \tau) = 0$ with respect to model parameter $m$
+To obtain the Frechet derivative, we differentiate connectivity equation $f[d(x_r,t;x_s),\delta \tau(x_r,x_s)] = 0$ with respect to model parameter $m(x)$
 \begin{equation}
-\dfrac{\partial f}{\partial u}\dfrac{\partial u}{\partial m} + \dfrac{\partial f}{\partial \delta \tau}\dfrac{\partial \delta \tau}{\partial m} = 0
+\dfrac{\partial f [d(x_r,t;x_s),\delta \tau(x_r,x_s)]}{\partial d(x_r,t;x_s)}\dfrac{\partial d (x_r,t;x_s)}{\partial m (x)} + \dfrac{\partial f [d(x_r,t;x_s),\delta \tau(x_r,x_s)]}{\partial \delta \tau (x_r,x_s)}\dfrac{\partial \delta \tau (x_r,x_s)}{\partial m(x)} = 0
 \end{equation}
 The Frechet derivative is given by
 \begin{equation}
-\dfrac{\partial \delta \tau}{\partial m}= -\left( \dfrac{\partial f}{\partial \delta \tau}\right)^{-1}\left( \dfrac{\partial f}{\partial u}\dfrac{\partial u}{\partial m} \right)
+\dfrac{\partial \delta \tau (x_r,x_s)}{\partial m (x)}= -\left[ \dfrac{\partial f (d,\delta \tau)}{\partial \delta \tau (x_r,x_s)}\right]^{-1}\left[ \dfrac{\partial f (d, \delta \tau)}{\partial d (x_r,t;x_s)}\dfrac{\partial d (x_r,t;x_s)}{\partial m (x)} \right]
 \label{frechet}
 \end{equation}
-Using equation \ref{implicit}, the derivative $\partial f /  \partial \delta \tau$ can be written as
+Using equation \ref{implicit}, we have
 \begin{equation}
 \begin{aligned}
-\dfrac{\partial f}{\partial \delta \tau} &= \int_{t1}^{t2}u(t)\dfrac{\partial \dot{u}^{obs}(t+ \delta \tau)}{\partial \delta \tau}dt = \int_{t1}^{t2}u(t)\dfrac{\partial \dot{u}^{obs}(t+ \delta \tau)}{\partial (t+ \delta \tau)}\dfrac{\partial (t+ \delta \tau)}{\partial \delta \tau}dt\\
-&=\int_{t1}^{t2}u(t)\ddot{u}^{obs}(t+\delta \tau)dt
+\dfrac{\partial f (d,\delta \tau)}{\partial \delta \tau (x_r,x_s)} &= \int_{t1}^{t2}d(x_r,t;x_s)\dfrac{\partial \dot{d}^{obs}(x_r,t+ \delta \tau;x_s)}{\partial \delta \tau (x_r,x_s)}dt\\
+& = \int_{t1}^{t2}d(x_r,t;x_s)\dfrac{\partial \dot{d}^{obs}(x_r,t+ \delta \tau;x_s)}{\partial (t+ \delta \tau)}\dfrac{\partial (t+ \delta \tau)}{\partial \delta \tau}dt\\
+&=\int_{t1}^{t2}d(x_r,t;x_s)\ddot{d}^{obs}(x_r,t+\delta \tau;x_s)dt,
 \end{aligned}
 \end{equation}
 and
 \begin{equation}
-\dfrac{\partial f}{\partial u}\dfrac{\partial u}{\partial m} = \int_{t1}^{t2}\dfrac{\partial u(t)}{\partial m}\dot{u}^{obs}(t+ \delta \tau)dt.
+\dfrac{\partial f(d,\delta \tau)}{\partial d(x_r,t;x_s)}\dfrac{\partial d(x_r,t;x_s)}{\partial m(x)} = \int_{t1}^{t2}\dfrac{\partial d(x_r,t;x_s)}{\partial m(x)}\dot{d}^{obs}(x_r,t+ \delta \tau;x_s)dt.
 \end{equation}
-The Frechet derivative can be expressed as \citep{luo1991}
+With the above equations, the Frechet derivative can be expressed as \citep{luo1991}
 \begin{equation}
-\dfrac{\partial \delta \tau}{\partial m} = -\dfrac{\int_{t1}^{t2}\dfrac{\partial u(t)}{\partial m}\dot{u}^{obs}(t+ \delta \tau)dt}{\int_{t1}^{t2}u(t)\ddot{u}^{obs}(t+\delta \tau)dt}
+\dfrac{\partial \delta \tau (x_r,x_s)}{\partial m(x)} = -\dfrac{\int_{t1}^{t2}\dfrac{\partial d(x_r,t;x_s)}{\partial m(x)}\dot{d}^{obs}(x_r,t+ \delta \tau;x_s)dt}{\int_{t1}^{t2}d(x_r,t;x_s)\ddot{d}^{obs}(x_r,t+\delta \tau;x_s)dt}.
 \end{equation}
 
-If assuming that $u(t)^{obs}$ and $u(t)$ are purely time shifted \citep{marquering1999,dahlen2000,tromp2005,tape2007}, using $u^{obs}(t+\delta \tau)\approx u(t)$, the Frechet derivative can be rewritten as
+If assuming that $d(x_r,t;x_s)^{obs}$ and $d(x_r,t;x_s)$ are purely time shifted ($d^{obs}(x_r,t+\delta \tau;x_s)\approx d(x_r,t;x_s)$) \citep{marquering1999,dahlen2000,tromp2005,tape2007}, the Frechet derivative can be rewritten as
 \begin{equation}
-\dfrac{\partial \delta \tau}{\partial m} \approx -\dfrac{\int_{t1}^{t2}\dfrac{\partial u(t)}{\partial m}\dot{u}(t)dt}{\int_{t1}^{t2}u(t)\ddot{u}(t)dt}
+\dfrac{\partial \delta \tau(x_r,x_s)}{\partial m(x)} \approx -\dfrac{\int_{t1}^{t2}\dfrac{\partial d(x_r;t;x_s)}{\partial m(x)}\dot{d}(x_r,t;x_s)dt}{\int_{t1}^{t2}d(x_r,t;x_s)\ddot{d}(x_r,t;x_s)dt}.
+\label{global}
 \end{equation}
-
-Now, the gradient of misfit function (equation \ref{gradient}) changes to
+In this note, we follow the definition in equation \ref{global}. The gradient of misfit function (equation \ref{gradient}) changes to
 \begin{equation}
 \begin{aligned}
-g &= \dfrac{\partial J}{\partial m} = \underset{s}{\sum} \underset{r}{\sum} \dfrac{\partial \delta \tau}{\partial m}\delta \tau \approx -\underset{s}{\sum} \underset{r}{\sum} \delta \tau \dfrac{\int_{t1}^{t2}\dfrac{\partial u(t)}{\partial m}\dot{u}(t)dt}{\int_{t1}^{t2}u(t)\ddot{u}(t)dt}\\
-&= -\underset{s}{\sum} \underset{r}{\sum} \int_{t1}^{t2} \dfrac{\partial u(t)}{\partial m}\left[\dot{u}(t)\dfrac{\delta \tau}{N}\right]dt
+g(x) &= \dfrac{\partial J}{\partial m(x)} \\
+&= \underset{s}{\sum} \underset{r}{\sum} \dfrac{\partial \delta \tau(x_r,x_s)}{\partial m(x)}\delta \tau(x_r,x_s) \\
+&\approx -\underset{s}{\sum} \underset{r}{\sum} \delta \tau(x_r,x_s) \dfrac{\int_{t1}^{t2}\dfrac{\partial d(x_r,t;x_s)}{\partial m(x)}\dot{d}(x_r,t;x_s)dt}{\int_{t1}^{t2}d(x_r,t;x_s)\ddot{d}(x_r,t;x_s)dt}\\
+&= -\underset{s}{\sum} \underset{r}{\sum} \int_{t1}^{t2} \dfrac{\partial d(x_r,t;x_s)}{\partial m(x)}\left[\dot{d}(x_r,t;x_s)\dfrac{\delta \tau(x_r,x_s)}{N}\right]dt
 \end{aligned}
+\label{gradient_cc}
 \end{equation}
-where normalizer $N = \int_{t1}^{t2}u(t)\ddot{u}(t)dt$ and $\partial u(t)/\partial m$ is the Frechet derivative of waveform data $u(t)$ with respect to $m$.
-This formulation is similar to the gradient of the $\ell_2$ norm waveform misfit function
+where $N = \int_{t1}^{t2}d(x_r,t;x_s)\ddot{d}(x_r,t;x_s)dt$ is normalizer and $\partial d(x_r,t;x_s)/\partial m(x)$ is the Frechet derivative of waveform data $d(x_r,t;x_s)$ with respect to $m(x)$.
+This formulation is very similar to the gradient of the $\ell_2$ norm waveform misfit function
 \begin{equation}
-g_{\ell_2} = -\underset{s}{\sum} \underset{r}{\sum} \int_{t1}^{t2} \dfrac{\partial u(t)}{\partial m}\left[\delta u(t)\right]dt
+g_{\ell_2}(x) = -\underset{s}{\sum} \underset{r}{\sum} \int_{t1}^{t2} \dfrac{\partial d(x_r,t;x_s)}{\partial m(x)}\left[\delta d(x_r,t;x_s)\right]dt
+\label{gradient_ls}
 \end{equation}
-where $\delta u(t) = u^{obs}(t) - u(t)$. 
+where $\delta d(x_r,t;x_s) = d^{obs}(x_r,t;x_s) - d(x_r,t;x_s)$ is the waveform difference. The difference between equation \ref{gradient_ls} and equation \ref{gradient_cc} is the replacement of $[\delta d(x_r,t;x_s)]$ by $[\dot{d}(x_r,t;x_s)\dfrac{\delta \tau(x_r,x_s)}{N}]$.
 
 \subsection{Adjoint source}
 Instead of explicitly construct the Frechet derivative, the adjoint-state method is usually used to compute the action of Frechet derivative on data residuals. 
+We first look at the Frechet derivative $\partial d(x_r,t;x_s)/\partial m(x)$. 
+
+The elastic wave equation can be abstractly written as
+\begin{equation}
+{\bf S}{\bf u} = {\bf f},
+\label{wave}
+\end{equation}
+where ${\bf S}$ denotes wave equation operator, ${\bf u}$ is wavefield vector and ${\bf f}$ is source vector. 
+The solution of the wave equation is 
+\begin{equation}
+{\bf u} = {\bf S}^{-1}{\bf f}.
+\end{equation}
+The corresponding Green's function of wave equation \ref{wave} follows  
+\begin{equation}
+S(x,t)G(x,t;x',t') = \delta (x-x') \delta(t-t')
+\end{equation}
+The integration representation of the solution of the wave equation is
+\begin{equation}
+u(x,t) = \int_{0}^t\int_V G(x,t;x',t')f(x',t')d^3x'dt'
+\end{equation}
+
+Assuming that the Green's function is time invariant 
+\begin{equation}
+G(x,t;x',t') = G(x, t-t';x',0) =G(x, 0;x',t'-t) 
+\end{equation}
+The wavefield can be written as
+\begin{equation}
+\begin{aligned}
+u(x,t) &= \int_{0}^t\int_V G(x, t-t';x',0)f(x',t')d^3x'dt'\\
+&=\int_V G(x,t;x',0) * f(x',t)d^3x'
+\end{aligned}
+\end{equation}
+The wavefield due to a point source located at $x'=x_s$ is
+\begin{equation}
+u(x,t;x_s) = G(x,t;x_s,0) * f(t;x_s),
+\end{equation}
+where $f(x',t') = \delta(x'-x_s)f(t;x_s)$.
+
+The data recorded at receivers are a sampled version of the wavefield
+\begin{equation}
+d(x_r,t;x_s) = u(x_r,t;x_s) =G(x_r,t;x_s,0) * f(t;x_s)
+\end{equation}
+
+Differentiate the wave equation with respect to model vector
+\begin{equation}
+\dfrac{\partial {\bf S}}{\partial {\bf m}} {\bf u} + {\bf S}\dfrac{\partial {\bf u}}{\partial {\bf m}} = {\bf 0},
+\end{equation}
+where the right side of the equation vanishes because the source term is not dependent on the model parameter.
+The Frechet derivative of ${\bf u}$ with respect to ${\bf m}$ can be expressed as
+\begin{equation}
+\dfrac{\partial {\bf u}}{\partial {\bf m}} = -{\bf S}^{-1}\left(\dfrac{\partial {\bf S}}{\partial {\bf m}}{\bf u} \right)
+\end{equation}
+The Born scattered wavefield $\delta {\bf u}$ due to scatter $\delta {\bf m}$ can be written as
+\begin{equation}
+\delta {\bf u} = \dfrac{\partial {\bf u}}{\partial {\bf m}}\delta {\bf m} = -{\bf S}^{-1}\left(\dfrac{\partial {\bf S}}{\partial {\bf m}}{\bf u} \right)\delta {\bf m},
+\label{born}
+\end{equation}
+where ${\bf u}$ is the incident wavefield. Using the Green's function, equation \ref{born} changes to
+\begin{equation}
+\delta u(x,t) = -\int_VG(x,t;x',0)*\left[\dfrac{\partial S(x',t)}{\partial m(x')} u(x',t)\delta m(x')\right]d^3x'
+\end{equation}
+The scattered data recorded at the location of receivers due to incident wavefield excited by source $s$ are
+\begin{equation}
+\delta d(x_r,t;x_s) = \delta u(x_r,t;x_s) = -\int_VG(x_r,t;x,0)*\left[\dfrac{\partial S(x,t)}{\partial m(x)} u(x,t;x_s)\delta m(x)\right]d^3x
+\end{equation}
+The integration kernel of Frechet derivative $\partial d/\partial m$ is
+\begin{equation}
+\dfrac{\partial d(x_r,t;x_s)}{\partial m(x)} = -G(x_r,t;x,0) * \left[\dfrac{\partial S(x,t)}{\partial m(x)}u(x,t;x_s) \right]
+\end{equation}
+
+The gradient of cross-correlation travel time misfit function equation \ref{gradient_cc} can be written as
+\begin{equation}
+\begin{aligned}
+ g(x) &= -\underset{s}{\sum} \underset{r}{\sum} \int_{t1}^{t2} \dfrac{\partial d(x_r,t;x_s)}{\partial m(x)}\left[\dot{d}(x_r,t;x_s)\dfrac{\delta \tau(x_r,x_s)}{N}\right]dt\\
+ &=\underset{s}{\sum} \underset{r}{\sum} \int_{t1}^{t2}\left\{G(x_r,t;x,0) * \left[\dfrac{\partial S(x,t)}{\partial m(x)}u(x,t;x_s) \right] \right\} \left[\dot{d}(x_r,t;x_s)\dfrac{\delta \tau(x_r,x_s)}{N}\right]dt.
+\end{aligned}
+  \label{gradient_green}
+ \end{equation}
+Using the property of convolution
+\begin{equation}
+\int[f(t)*g(t)]h(t)dt = \int g(t)[f(-t)*h(t)]dt,
+\end{equation}
+equation \ref{gradient_green} can be changed to
+\begin{equation}
+\begin{aligned}
+g(x) &= \underset{s}{\sum} \underset{r}{\sum} \int_{t1}^{t2}\left[\dfrac{\partial S(x,t)}{\partial m(x)}u(x,t;x_s) \right] \left\{G(x_r,-t;x,0) * \left[\dot{d}(x_r,t;x_s)\dfrac{\delta \tau(x_r,x_s)}{N}\right]  \right\}dt\\
+&= \underset{s}{\sum} \underset{r}{\sum} \int_{t1}^{t2}\left[\dfrac{\partial S(x,t)}{\partial m(x)}u(x,t;x_s) \right] \left\{G(x,0;x_r,t) * \left[\dot{d}(x_r,t;x_s)\dfrac{\delta \tau(x_r,x_s)}{N}\right]  \right\}dt,
+\end{aligned}
+\end{equation}
+where the time invariant property ($G(x_r,-t;x,0)= G(x_r,0;x,t)$) and reciprocity of Green's function is used ($G(x_r,0;x,t) = G(x,0;x_r,t)$).
+The physical meaning of the term in the curly bracket is taking the adjoint source, placing it in the receiver position $x_r$ and propagating it in reversing time direction ($t \rightarrow 0$).
+The adjoint source is given by the formulation
+\begin{equation}
+s_{adj}= \dot{d}(x_r,t;x_s)\dfrac{\delta \tau(x_r,x_s)}{N}.
+\end{equation}
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%EXAMPLES%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Examples}
+\subsection{Synthetic example}
+In the synthetic data example, the observed data is a Ricker wavelet with peak frequency $1$ Hz. The synthetic data is a shifted and amplitude reduced version of the observed data. The time shift measured by the cross-correlation is $-0.2$ s. It means that the observed data is $0.2$ s advance than the synthetic data. The value of the cross-correlation travel time misfit function is $0.02$. 
 
+\subsection{Real data example}
+The observed seismogram is from earthquake in Berkeley January 4, 2018. The recording station is WENL - Wente Vineyards, Livermore, CA. The observed data is low-pass filtered with corner frequency $0.02$ Hz. The synthetic data is simulated using $SW4$. 
+The time shift measure by cross-correlation is $1.025$ s. The value of the misfit function is $0.525$
 
 
 \renewcommand{\figdir}{Fig} % figure directory
-\multiplot{1}{Figure1,Figure2}{width=0.9\textwidth}{(a) The observed and synthetic data. The observed data is $0.1$ sec in advance of the synthetic data. (b) The normalized adjoint source for cross-correlation travel time misfit.}
+\multiplot{1}{Figure1,Figure2}{width=0.8\textwidth}{(a) The observed and synthetic data. The observed data is $0.1$ sec in advance of the synthetic data. (b) The normalized adjoint source for cross-correlation travel time misfit.}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%CONCLUSIONS%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conclusions}
+\plot{Figure3}{width=\textwidth}{The Jan. 4, 2018 Berkeley earthquake data recorded at station WENL.The observed (blue) and synthetic (red) data. The data are low-pass filtered with corner frequency $0.02$ Hz.}
 
-
-\section{Acknowledgments}
+\multiplot{1}{Figure4,Figure5,Figure6,Figure7}{width=0.8\textwidth}{(a) Horizontal component of the synthetic and real earthquake data (Jan 4, 2018 Berkeley event). (b) Windowed version of the data. (c) The normalized adjoint source for cross-correlation travel time misfit. (d) The observed data is shifted by the time delay estimated from cross-correlation for comparison.}
 
 
 

@@ -1,3 +1,9 @@
-\contentsline {figure}{\numberline {1}{\ignorespaces (a) The observed and synthetic data. The observed data is $0.1$ sec in advance of the synthetic data. (b) The normalized adjoint source for cross-correlation travel time misfit.}}{8}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {}}}{8}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {}}}{8}
+\contentsline {figure}{\numberline {1}{\ignorespaces (a) The observed and synthetic data. The observed data is $0.1$ sec in advance of the synthetic data. (b) The normalized adjoint source for cross-correlation travel time misfit.}}{12}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {}}}{12}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {}}}{12}
+\contentsline {figure}{\numberline {2}{\ignorespaces The Jan. 4, 2018 Berkeley earthquake data recorded at station WENL.The observed (blue) and synthetic (red) data. The data are low-pass filtered with corner frequency $0.02$ Hz.}}{13}
+\contentsline {figure}{\numberline {3}{\ignorespaces (a) Horizontal component of the synthetic and real earthquake data (Jan 4, 2018 Berkeley event). (b) Windowed version of the data. (c) The normalized adjoint source for cross-correlation travel time misfit. (d) The observed data is shifted by the time delay estimated from cross-correlation for comparison.}}{14}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {}}}{14}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {}}}{14}
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces {}}}{14}
+\contentsline {subfigure}{\numberline {(d)}{\ignorespaces {}}}{14}

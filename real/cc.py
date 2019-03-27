@@ -1,36 +1,23 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-import utils
 from obspy import read
 
 # 1 - Read/synthetize data
 
-# Synthetize data
-tmax = 20
-dt = 0.002
-nt = math.floor(tmax/dt) + 1
-t = np.arange(0,nt)*dt
-f = 1.0
-
-wavelet = utils.ricker(f, dt)
-d = np.zeros(nt)
-d[round(nt/2)] = 1.0
-d = np.convolve(d,wavelet,'same')  #observed data
-
-td = 0.2                        #time delay (if td > 0, syn arrive after obs)
-s = utils.shift(d, dt, td)            #synthetic data
-s = 0.8*s
-
 # Read data
-#st = read('trival_data.sac',debug_headers=True)
-#d = st[0].data
-#st = read('trival_syn.sac',debug_headers=True)
-#s = st[0].data
-#dt = st[0].stats.delta
-#nt = st[0].stats.npts
-#t = np.arange(0,nt)*dt
+st = read('BK.WENL.00.BHZ_filtered.SAC',debug_headers=True)
+d = st[0].data
+sampling_rate = st[0].stats.sampling_rate
 
+st = read('BK.BH.WENL.u',debug_headers=True)
+st.resample(sampling_rate)
+s = st[0].data
+dt = st[0].stats.delta
+nt = st[0].stats.npts
+t = np.arange(0,nt)*dt
+
+plt.figure(figsize=(15,4))
 plt.plot(t,d,'b')
 plt.plot(t,s,'r')
 plt.xlabel('Time (s)')
@@ -42,19 +29,23 @@ plt.show()
 # 2 - Butterwoth bandpass filter data (optional)
 
 # 3 - Windowing
-n1 = 0
-n2 = nt
+t1 = 0
+t2 = 20.0
+n1 = int(t1/dt)
+n2 = int(t2/dt)
 
 d = d[n1:n2]    # d[n1] -> d[n2-1]
 s = s[n1:n2]    # s[n1] -> s[n2-1]
 t = np.arange(n1,n2)*dt # n1*dt -> (n2-1)*dt
 nt = len(t)
 
+plt.figure(figsize=(15,4))
 plt.plot(t,d,'b')
 plt.plot(t,s,'r')
 plt.xlabel('Time (s)')
 plt.ylabel('Amplitude')
 plt.title('Windowed observed and synthetic data')
+plt.savefig('Figure2.pdf')
 plt.show()
 
 # 4 - pre-process/time domain taper applied to windowed data
@@ -95,13 +86,15 @@ if ishift < 0:
 if ishift > 0:
     d_dec[nlen-ishift-1:nlen-1] = d_dec[nlen-ishift-2]
 
-d_dec = d_dec * math.exp(-dlnA)
+#d_dec = d_dec * math.exp(-dlnA)
 
+plt.figure(figsize=(15,4))
 plt.plot(t,s,'r')
 plt.plot(t,d_dec,'b')
 plt.xlabel('Time (s)')
 plt.ylabel('Amplitude')
 plt.title('Synthetic data and Deconstruct data')
+plt.savefig('Figure4.pdf')
 plt.show()
 
 # 7 - Compute the estimated uncertainty for the cross-correlation measurement
@@ -126,15 +119,17 @@ wvec[fnum:nfft] = dw * np.arange(-fnum + 2, 0)  # negative frequency
 
 # Adjoint source
 # {\dot{u}*\delta \tau}/N
-v = np.gradient(s)
-a = np.gradient(v)
+v = np.gradient(s)  # particle velocity
+a = np.gradient(v)  # particle acceleration
 N = sum(a*s)
 adj = v * tshift / N
+
+plt.figure(figsize=(15,4))
 plt.plot(t,adj)
 plt.xlabel('Time (s)')
 plt.ylabel('Amplitdue')
 plt.title('Normalized adjoint source')
-plt.savefig('Figure2.pdf')
+plt.savefig('Figure3.pdf')
 plt.show()
 
 # Estimate stopping frequency
